@@ -1,0 +1,563 @@
+/* Authentic iMessage theme for Vesktop / Vencord QuickCSS
+   Requires Vencord's built-in ThemeAttributes plugin enabled. */
+
+:root {
+  --imessage-self-bg: #007aff;
+  --imessage-self-text: #ffffff;
+  --imessage-other-bg: color-mix(in srgb, var(--text-default, var(--text-normal, #000000)) 10%, var(--background-base-low, var(--background-primary, #f2f2f7)));
+  --imessage-other-text: var(--text-default, var(--text-normal));
+  --imessage-bubble-border: color-mix(in srgb, var(--text-default, var(--text-normal, #000000)) 12%, transparent);
+  --imessage-mention-bg: color-mix(in srgb, #f0b232 28%, var(--background-base-low, var(--background-primary, #ffffff)));
+  --imessage-mention-border: rgba(240, 178, 50, 0.6);
+  --imessage-spine-color: color-mix(in srgb, var(--text-default, var(--text-normal, #808080)) 35%, transparent);
+  --imessage-radius: 18px;
+  --imessage-max-width: min(68%, 540px);
+  --imessage-tail-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 18'%3E%3Cpath d='M0 0 L8 0 C8 9 11 15 16 17 C11 18 5 17 0 14 Z'/%3E%3C/svg%3E");
+}
+
+.theme-dark,
+.theme-darker,
+.theme-midnight {
+  --imessage-self-bg: #0a84ff;
+  --imessage-other-bg: color-mix(in srgb, var(--text-default, var(--text-normal, #ffffff)) 14%, var(--background-base-low, var(--background-primary, #1c1c1e)));
+  --imessage-bubble-border: color-mix(in srgb, var(--text-default, var(--text-normal, #ffffff)) 14%, transparent);
+  --imessage-mention-bg: color-mix(in srgb, #f0b232 26%, var(--background-base-low, var(--background-primary, #1c1c1e)));
+}
+
+[class*="messageListItem_"] {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0 !important;
+  padding: 1.5px 20px 1.5px 20px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]):hover {
+  background: transparent !important;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[class*="groupStart_"] {
+  margin-top: 14px !important;
+}
+
+/* Flatten contents_ and header_ so repliedMessage (-2), avatar (-1), headerText (0),
+   bubble (1), images/embeds container (2), timestamp (3), and ephemeral footer (4) stack in order */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"],
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="header_"] {
+  display: contents !important;
+}
+
+/* Hide only Discord's duplicate clickable reply spine without hiding slash-command headers */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessageClickableSpine_"],
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[class*="hasReply_"]::before,
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessage_"]::after,
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessage_"]:empty {
+  display: none !important;
+}
+
+/* Reply / slash-command line: remove timestamps and connect spine directly to the sender's pfp (left) */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessage_"] {
+  order: -2;
+  position: relative !important;
+  margin-left: 28px !important;
+  margin-right: 0 !important;
+  margin-bottom: 4px !important;
+  max-width: calc(var(--imessage-max-width) - 28px);
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessage_"]::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: -18px !important;
+  right: auto !important;
+  top: 50% !important;
+  bottom: -6px !important;
+  width: 14px !important;
+  margin: 0 !important;
+  border-left: 2px solid var(--imessage-spine-color) !important;
+  border-top: 2px solid var(--imessage-spine-color) !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-top-left-radius: 6px !important;
+  border-top-right-radius: 0 !important;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessage_"] :is([class*="timestamp_"], time) {
+  display: none !important;
+}
+
+/* Keep replied-to preview text plain without speech bubble styling */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessage_"] [class*="messageContent_"] {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  max-width: none !important;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="repliedMessage_"] [class*="messageContent_"]::after {
+  display: none !important;
+}
+
+/* Flow-positioned 22px avatar aligned directly beside sender name regardless of replies or bot commands */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="avatar_"] {
+  order: -1;
+  position: static !important;
+  width: 22px !important;
+  height: 22px !important;
+  margin: 0 0 -22px 0 !important;
+  transform: none !important;
+  z-index: 2;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="avatarDecoration_"] {
+  order: -1;
+  position: static !important;
+  width: 26px !important;
+  height: 26px !important;
+  margin: -2px 0 -24px -2px !important;
+  transform: none !important;
+  z-index: 3;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="headerText_"] {
+  order: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 22px;
+  padding-left: 28px;
+  margin-bottom: 4px;
+  line-height: 1.2 !important;
+  opacity: 0.85;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="headerText_"] [class*="username_"] {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+}
+
+/* Full pill iMessage bubbles (excludes replied-to preview text) */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"] > [class*="messageContent_"] {
+  order: 1;
+  position: relative;
+  margin-left: 0 !important;
+  padding: 7px 13px !important;
+  width: fit-content;
+  max-width: var(--imessage-max-width);
+  font-size: 15px;
+  line-height: 1.35;
+  background: var(--imessage-other-bg);
+  border: 1px solid var(--imessage-bubble-border) !important;
+  color: var(--imessage-other-text);
+  border-radius: var(--imessage-radius) !important;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"] > [class*="messageContent_"]:empty {
+  display: none !important;
+}
+
+/* Curved iMessage tail only on the last message of a received group */
+[class*="messageListItem_"]:not(:has(+ [class*="messageListItem_"] [class*="message_"]:not([class*="groupStart_"]))) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"] > [class*="messageContent_"]::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: -6px;
+  width: 15px;
+  height: 17px;
+  background: var(--imessage-other-bg);
+  -webkit-mask: var(--imessage-tail-mask) no-repeat center / contain;
+  mask: var(--imessage-tail-mask) no-repeat center / contain;
+  transform: scaleX(-1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* System/call messages: icon inside bubble on the middle-facing side,
+   and timestamp positioned cleanly below the bubble border */
+[class*="message_"][class*="systemMessage_DISABLED_"] {
+  padding-bottom: 22px !important;
+}
+
+[class*="message_"][class*="systemMessage_DISABLED_"] :is([class*="container_"], [class*="messageContent_"]):has(> [class*="iconContainer_"]) {
+  display: inline-flex !important;
+  flex-direction: row-reverse !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+[class*="message_"][class*="systemMessage_DISABLED_"] [class*="iconContainer_"] {
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+}
+
+[class*="message_"][class*="systemMessage_DISABLED_"] [class*="timestamp_"] {
+  position: absolute !important;
+  top: calc(100% + 11px) !important;
+  left: 6px !important;
+  right: auto !important;
+  margin: 0 !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  color: var(--text-muted) !important;
+  opacity: 0.62 !important;
+  white-space: nowrap !important;
+}
+
+/* Accessories (embeds, images, dropdowns, buttons, reactions) sit above the timestamp */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="container_"] {
+  order: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: var(--imessage-max-width);
+  margin-top: 4px;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="container_"]:empty {
+  display: none !important;
+  margin: 0 !important;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="embedFull_"],
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="imageWrapper_"] {
+  border-radius: 16px !important;
+}
+
+/* Ephemeral bot notice ("Only you can see this") sits cleanly at the very bottom */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="ephemeralMessage_"] {
+  order: 4;
+  margin-top: 4px;
+}
+
+/* Timestamps rendered underneath messages, images, and groups of messages */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="header_"] > [class*="timestamp_"] {
+  order: 3;
+  margin-left: 6px !important;
+  margin-top: 3px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  opacity: 0.62;
+  display: block !important;
+}
+
+/* Hide timestamps on non-last messages in a multi-message group */
+[class*="messageListItem_"]:has(+ [class*="messageListItem_"] [class*="message_"]:not([class*="groupStart_"])) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="header_"] > [class*="timestamp_"],
+[class*="messageListItem_"]:has(+ [class*="messageListItem_"] [class*="message_"]:not([class*="groupStart_"])) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="timestampVisibleOnHover_"] {
+  display: none !important;
+}
+
+/* Show the final follow-up message's timestamp permanently underneath the group */
+[class*="messageListItem_"]:not(:has(+ [class*="messageListItem_"] [class*="message_"]:not([class*="groupStart_"]))) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]):not([class*="groupStart_"]) [class*="timestampVisibleOnHover_"] {
+  order: 3;
+  position: static !important;
+  display: block !important;
+  opacity: 0.62 !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 3px 0 0 6px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  pointer-events: auto !important;
+}
+
+/* Your messages (right side) - never render your own pfp, name, or pronoun tags */
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"],
+  [class*="messageListItem_"][data-author-self="true"] [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-author-self="true"]
+) {
+  align-items: flex-end !important;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) :is([class*="avatar_"], [class*="avatarDecoration_"]),
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="header_"] > :not([class*="timestamp_"]) {
+  display: none !important;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) :is([class*="header_"] > [class*="timestamp_"], [class*="timestampVisibleOnHover_"]) {
+  margin-left: 0 !important;
+  margin-right: 6px !important;
+  text-align: right !important;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) > [class*="contents_"] > [class*="messageContent_"],
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"]))
+) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"] > [class*="messageContent_"] {
+  background: var(--imessage-self-bg) !important;
+  border: 1px solid var(--imessage-bubble-border) !important;
+  color: var(--imessage-self-text) !important;
+}
+
+/* Your own call/system bubble: icon on left side inside bubble, muted timestamp underneath on right */
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"]))
+) [class*="message_"][class*="systemMessage_DISABLED_"] :is([class*="container_"], [class*="messageContent_"]):has(> [class*="iconContainer_"]),
+[class*="message_"][class*="systemMessage_DISABLED_"][data-is-self="true"] :is([class*="container_"], [class*="messageContent_"]):has(> [class*="iconContainer_"]) {
+  flex-direction: row !important;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"]))
+) [class*="message_"][class*="systemMessage_DISABLED_"] [class*="timestamp_"],
+[class*="message_"][class*="systemMessage_DISABLED_"][data-is-self="true"] [class*="timestamp_"] {
+  left: auto !important;
+  right: 6px !important;
+}
+
+/* Keep sent bubble text white without overriding timestamps positioned outside call bubbles */
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) > [class*="contents_"] > [class*="messageContent_"] *:not([class*="timestamp_"]):not(time),
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"]))
+) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"] > [class*="messageContent_"] *:not([class*="timestamp_"]):not(time) {
+  color: var(--imessage-self-text) !important;
+}
+
+/* Keep call message timestamps muted and clearly visible over light and dark backgrounds */
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[class*="systemMessage_"] [class*="timestamp_"],
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[class*="systemMessage_"] [class*="timestamp_"] *,
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[class*="systemMessage_"] time {
+  color: var(--text-muted, var(--text-normal)) !important;
+  opacity: 0.72 !important;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="messageContent_"] [class*="edited_"] {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+/* Curved iMessage tail on the bottom-right of your last message in a group */
+[class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])):not(:has(+ [class*="messageListItem_"] [class*="message_"]:not([class*="groupStart_"]))) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"] > [class*="messageContent_"]::after,
+[class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])):not(:has(+ [class*="messageListItem_"] [class*="message_"]:not([class*="groupStart_"]))) [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) > [class*="contents_"] > [class*="messageContent_"]::after {
+  left: auto;
+  right: -6px;
+  background: var(--imessage-self-bg);
+  transform: none;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="messageContent_"] a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="messageContent_"] code {
+  background: rgba(0, 0, 0, 0.22);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="messageContent_"] [class*="mention"] {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) > [class*="container_"],
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="message_"] > [class*="container_"] {
+  align-items: flex-end;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="reactions_"] {
+  justify-content: flex-end;
+}
+
+/* Your own replies: connect spine from right side of reply preview into the top-right of your bubble */
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="repliedMessage_"] {
+  align-self: flex-end;
+  margin-left: 0 !important;
+  margin-right: 22px !important;
+  margin-bottom: 4px !important;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="repliedMessage_"]::before {
+  display: block !important;
+  left: auto !important;
+  right: -14px !important;
+  top: 50% !important;
+  bottom: -6px !important;
+  width: 12px !important;
+  border-left: none !important;
+  border-right: 2px solid var(--imessage-spine-color) !important;
+  border-top: 2px solid var(--imessage-spine-color) !important;
+  border-bottom: none !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 6px !important;
+}
+
+:is(
+  [class*="messageListItem_"][data-is-self="true"]:not(:has([class*="systemMessage_"])),
+  [class*="messageListItem_"]:has([data-is-self="true"]):not(:has([class*="systemMessage_"])),
+  [class*="message_"][class*="cozy_"]:not([class*="systemMessage_"])[data-is-self="true"]
+) [class*="buttonContainer_"] {
+  left: 16px;
+  right: auto;
+}
+
+/* Keep centered iMessage-style date dividers clean */
+[class*="divider_"][class*="hasContent_"] {
+  border-top: none !important;
+  margin: 16px 0 8px !important;
+}
+
+[class*="divider_"][class*="hasContent_"] [class*="content_"] {
+  background: transparent !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  opacity: 0.7;
+}
+
+[class*="message_"][class*="cozy_"]:not([class*="systemMessage_"]) [class*="channelTextArea_"] {
+  width: min(560px, 65vw);
+}
+
+/* Fully highlight mentioned message bubbles in yellow */
+[class*="message_"][class*="mentioned_"]::before {
+  display: none !important;
+}
+
+[class*="message_"][class*="mentioned_"] > [class*="contents_"] > [class*="messageContent_"] {
+  background: var(--imessage-mention-bg) !important;
+  border-color: var(--imessage-mention-border) !important;
+  box-shadow: none !important;
+}
+
+[class*="message_"][class*="mentioned_"] > [class*="contents_"] > [class*="messageContent_"]::after {
+  background: var(--imessage-mention-bg) !important;
+}
+
+/* System messages (calls, boosts, server joins, group adds/removes, pins, friend accepts):
+   render natively like regular Discord, centered horizontally in the chat */
+[class*="message_"][class*="cozy_"][class*="systemMessage_"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+[class*="message_"][class*="cozy_"][class*="systemMessage_"] > [class*="contents_"] {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+[class*="message_"][class*="cozy_"][class*="systemMessage_"] > [class*="contents_"] > [class*="container_"],
+[class*="message_"][class*="cozy_"][class*="systemMessage_"] > [class*="contents_"] > [class*="messageContent_"] {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  text-align: center !important;
+}
+
+[class*="message_"][class*="cozy_"][class*="systemMessage_"] [class*="iconContainer_"] {
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+[class*="message_"][class*="cozy_"][class*="systemMessage_"] > [class*="container_"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+[class*="message_"][class*="cozy_"][class*="systemMessage_"] [class*="iconContainer_"] {
+  margin-right: 6px !important;
+}
